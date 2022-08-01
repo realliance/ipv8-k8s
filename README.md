@@ -2,7 +2,7 @@
 
 ### Preset Overlays
 
-**Nightly** uses all new builds, may receive breaking deployments during version propagation.
+**Nightly** uses all new builds, may outages during version propagation.
 
 ### To Deploy Nightly Release
 
