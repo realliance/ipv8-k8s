@@ -7,7 +7,8 @@
     ":pinVersions",
     "docker:pinDigests",
     ":rebaseStalePrs",
-    ":automerge",
+    ":automergeMinor",
+    ":automergeDigest",
     ":skipStatusChecks",
     "group:allNonMajor"
   ],
