@@ -26,3 +26,8 @@ kind: Namespace
 metadata:
   name: ipv8-nightly
 ```
+
+### Deployment Wishlist
+
+- Sentry for Error Tracking
+- Prometheus for Performance Monitoring and Usage Statistics
