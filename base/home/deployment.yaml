@@ -33,7 +33,7 @@ spec:
             medium: Memory
       containers:
         - name: web
-          image: ghcr.io/realliance/ipv8-web:0.0.5
+          image: ghcr.io/realliance/ipv8-web:0.0.5@sha256:9e9edbfec6a598264b3a8b7a33c36cb3f7a86f0ff114db71c74846452cdbd675
           ports:
             - containerPort: 8080
               protocol: TCP
