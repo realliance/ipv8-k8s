@@ -1,0 +1,67 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+- ../../base
+
+configMapGenerator:
+- name: variant-properties
+  envs:
+  - application.env
+
+replacements:
+# Login Endpoint
+- source:
+    kind: ConfigMap
+    name: variant-properties
+    version: v1
+    fieldPath: data.LOGIN_ENDPOINT
+  targets:
+  - select:
+      kind: Certificate
+      name: ipv8-login-tls
+    fieldPaths:
+    - spec.commonName
+    - spec.dnsNames.0
+  - select:
+      kind: Ingress
+      name: login
+    fieldPaths:
+    - spec.rules.0.host
+    - spec.tls.0.hosts.0
+  - select:
+      kind: Deployment
+      name: login
+    fieldPaths:
+    - spec.template.spec.containers.[name=login].env.[name=EXTERNAL_URL].value
+# Website Endpoint
+- source:
+    kind: ConfigMap
+    name: variant-properties
+    version: v1
+    fieldPath: data.WEB_ENDPOINT
+  targets:
+  - select:
+      kind: Certificate
+      name: ipv8-tls
+    fieldPaths:
+    - spec.commonName
+    - spec.dnsNames.0
+  - select:
+      kind: Ingress
+      name: web
+    fieldPaths:
+    - spec.rules.0.host
+    - spec.tls.0.hosts.0
+# Endpoint CORS
+- source:
+    kind: ConfigMap
+    name: variant-properties
+    version: v1
+    fieldPath: data.ENDPOINT_CORS
+  targets:
+  - select:
+      kind: Ingress
+      name: login
+    fieldPaths:
+    - metadata.annotations.nginx\.ingress\.kubernetes\.io/cors-allow-origin

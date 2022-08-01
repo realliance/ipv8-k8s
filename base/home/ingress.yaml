@@ -1,0 +1,43 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web
+  labels:
+    service: web
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+spec:
+  tls:
+    - hosts:
+        - WEB_ENDPOINT
+      secretName: ipv8-tls
+  rules:
+    - host: WEB_ENDPOINT
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ipv8-tls
+spec:
+  secretName: ipv8-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  commonName: WEB_ENDPOINT
+  dnsNames:
+    - WEB_ENDPOINT
+  privateKey:
+    rotationPolicy: Always
+    algorithm: ECDSA
+    size: 384

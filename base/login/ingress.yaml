@@ -1,0 +1,42 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: login
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/cors-allow-origin: ENDPOINT_CORS
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+spec:
+  tls:
+    - hosts:
+        - LOGIN_ENDPOINT
+      secretName: ipv8-login-tls
+  rules:
+    - host: LOGIN_ENDPOINT
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: login
+                port:
+                  number: 80
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ipv8-login-tls
+spec:
+  secretName: ipv8-login-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  commonName: LOGIN_ENDPOINT
+  dnsNames:
+    - LOGIN_ENDPOINT
+  privateKey:
+    rotationPolicy: Always
+    algorithm: ECDSA
+    size: 384

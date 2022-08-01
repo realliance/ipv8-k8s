@@ -1,0 +1,92 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: login
+  labels:
+    app: login
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: login
+  template:
+    metadata:
+      labels:
+        app: login
+    spec:
+      securityContext:
+        runAsUser: 101
+        runAsGroup: 101
+      initContainers:
+        - name: init-login-db
+          image: ghcr.io/realliance/ipv8-auth-migrations:0.1.7
+          command: ["sh", "-c", 'export DATABASE_URL="postgres://$DATABASE_USER:$DATABASE_PASS@psql/login" && diesel migration run']
+          env:
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: login.acid-ipv8.credentials.postgresql.acid.zalan.do
+                  key: username
+            - name: DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: login.acid-ipv8.credentials.postgresql.acid.zalan.do
+                  key: password
+      containers:
+        - name: login
+          image: ghcr.io/realliance/ipv8-auth:0.1.7
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsUser: 101
+            runAsGroup: 101
+          env:
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: login.acid-ipv8.credentials.postgresql.acid.zalan.do
+                  key: username
+            - name: DATABASE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: login.acid-ipv8.credentials.postgresql.acid.zalan.do
+                  key: password
+            - name: DATABASE_URI
+              value: psql
+            - name: DATABASE_DB
+              value: login
+            - name: SERVER_URL
+              value: "0.0.0.0"
+            - name: SERVER_PORT
+              value: "8080"
+            - name: EXTERNAL_URL
+              value: LOGIN_ENDPOINT
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: login
+  labels:
+    service: web
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: login
