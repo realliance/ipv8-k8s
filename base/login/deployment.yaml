@@ -25,7 +25,7 @@ spec:
         runAsGroup: 101
       initContainers:
         - name: init-login-db
-          image: ghcr.io/realliance/ipv8-auth-migrations:0.1.7@sha256:44a8098e591b536d40154b7b78a6edb6ed72e89891740147d819e5d2b843a1f6
+          image: ghcr.io/realliance/ipv8-auth-migrations:0.2.4@sha256:c09ffcccf89acfc288a1cd186772d434c72bb3ce9476b13b42eac9b8a09e0cc8
           command: ["sh", "-c", 'export DATABASE_URL="postgres://$DATABASE_USER:$DATABASE_PASS@psql/login" && diesel migration run']
           env:
             - name: DATABASE_USER
@@ -40,7 +40,7 @@ spec:
                   key: password
       containers:
         - name: login
-          image: ghcr.io/realliance/ipv8-auth:0.1.7@sha256:e0780314bb9f3f4a5e3640bfe7220f1d568bc88f2f00601e283660c02450c45c
+          image: ghcr.io/realliance/ipv8-auth:0.2.4@sha256:96f858b2976140052acda41bd85d13cfe5e1ee1ce3cf036019840082ac300a2e
           ports:
             - containerPort: 8080
               protocol: TCP
