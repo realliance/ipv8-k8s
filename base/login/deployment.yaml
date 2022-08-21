@@ -73,6 +73,8 @@ spec:
               value: "0.0.0.0"
             - name: SERVER_PORT
               value: "8080"
+            - name: RPC_ADDR
+              value: "0.0.0.0:1337"
             - name: EXTERNAL_URL
               value: LOGIN_ENDPOINT
 ---
