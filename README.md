@@ -1,16 +1,28 @@
 # IPv8 Deployment Manifests
 
-## To Deploy Nightly Release
+### Preset Overlays
+
+**Nightly** uses all new builds, may outages during version propagation.
+
+### To Deploy Nightly Release
+
+**kustomization.yaml**
+```yaml
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ipv8-nightly
+bases:
+  - github.com/realliance/ipv8-k8s/overlays/nightly
+resources:
+  - namespace.yaml
+```
+
+**namespace.yaml**
 ```yaml
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: ipv8-nightly
----
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-namespace: ipv8-nightly
-bases:
-  - raw.githubusercontent.com/realliance/ipv8-k8s/main/overlays/nightly
 ```
